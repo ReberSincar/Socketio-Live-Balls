@@ -1,4 +1,7 @@
 app.controller('indexController', ['$scope', 'indexFactory', ($scope, indexFactory) => {
+
+    $scope.messages = [];
+
     $scope.init = () => {
         const username = prompt('Enter your username');
         if (username) {
@@ -15,6 +18,18 @@ app.controller('indexController', ['$scope', 'indexFactory', ($scope, indexFacto
         }).then((socket) => {
             console.log('Connection Successfull ' + socket);
             socket.emit('newUser', { username });
+
+            socket.on('newUser', data => {
+                const messageData = { type: 0, username: data.username };
+                $scope.messages.push(messageData);
+                $scope.$apply();
+            });
+
+            socket.on('leaveUser', user => { 
+                const messageData = { type: 1, username: user.username };
+                $scope.messages.push(messageData);
+                $scope.$apply();
+            });
         }).catch((err) => {
             console.log('Error occured ' + err);
         });
