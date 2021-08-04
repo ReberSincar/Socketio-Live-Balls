@@ -13,10 +13,7 @@ app.controller('indexController', ['$scope', 'indexFactory', ($scope, indexFacto
     };
 
     function initConnection(username) {
-        indexFactory.connectSocket('http://localhost:3000', {
-            reconnectionAttempts: 3,
-            reconnectionDely: 500
-        }).then((socket) => {
+        indexFactory.connectSocket().then((socket) => {
             console.log('Connection Successfull ' + socket);
             socket.emit('newUser', { username });
 
