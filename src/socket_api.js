@@ -16,12 +16,18 @@ io.on('connection', (socket) => {
                 x: 0,
                 y: 0
             },
-            username: user.username 
+            username: user.username
         };
         // users.push(data);
         users[socket.id] = data;
 
         socket.broadcast.emit('newUser', data);
+        socket.emit('initPlayers', users);
+    });
+
+    socket.on('newPosition', user => {
+        users[socket.id] = user;
+        socket.broadcast.emit('newPosition', user);
     });
 
     socket.on('disconnect', () => {
