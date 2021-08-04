@@ -36,7 +36,7 @@ app.controller('indexController', ['$scope', 'indexFactory', ($scope, indexFacto
                 if (user) {
                     const messageData = { type: 1, username: user.username };
                     $scope.messages.push(messageData);
-                    $scope.players.push(user);
+                    delete $scope.players[user.id];
                     $scope.$apply();
                 }
             });
@@ -47,11 +47,30 @@ app.controller('indexController', ['$scope', 'indexFactory', ($scope, indexFacto
                 $scope.$apply();
             });
 
+            socket.on('newMessage', messageData => {
+                $scope.messages.push(messageData);
+                $scope.$apply();
+                const element = document.getElementById('chat-area');
+                element.scrollTop = element.scrollHeight;
+            });
+
             $scope.onClickPlayer = ($event) => {
-                $('#' + socket.id).animate({ 'left': $event.offsetX, 'top': $event.offsetY });
-                $scope.players[socket.id].position.x = $event.offsetX;
-                $scope.players[socket.id].position.y = $event.offsetY;
-                socket.emit('newPosition', $scope.players[socket.id]);
+                try {
+                    $('#' + socket.id).animate({ 'left': $event.offsetX, 'top': $event.offsetY });
+                    $scope.players[socket.id].position.x = $event.offsetX;
+                    $scope.players[socket.id].position.y = $event.offsetY;
+                    socket.emit('newPosition', $scope.players[socket.id]);
+                } catch (error) {
+                    console.log(error);
+                }
+
+            };
+
+            $scope.newMessage = () => {
+                let message = $scope.message;
+                const messageData = { type: 2, username: username, message: message };
+                socket.emit('newMessage', messageData);
+                $scope.message = '';
             };
         }).catch((err) => {
             console.log('Error occured ' + err);

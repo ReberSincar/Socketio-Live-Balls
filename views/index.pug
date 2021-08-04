@@ -5,23 +5,31 @@ block content
     .ui.one.column.stackable.center.aligned.page.grid.margin-30
         .column.twelve.wide
           .ui.stacked.segment.gameArea(ng-click="onClickPlayer($event)")
-            .circle.blue(
+            .circle(
               ng-repeat = "player in players",
-              ng-style = "{ 'left': player.position.x, 'top': player.position.y }",
-              id = "{{ player.id }}"
+              ng-style = "{ 'left': player.position.x + 'px', 'top': player.position.y + 'px' }",
+              id = "{{ player.id }}",
+              class="{{ player.color }}"
               )
               .relative
                 span.name {{player.username}}
-                //- .message Selam
-          .ui.items.chat
+                .message
+          .ui.items.chat#chat-area
             .item(ng-repeat="message in messages")
-              .content
-              span [SERVER]&nbsp&nbsp
-                a.header.name {{message.username}}&nbsp&nbsp
+              .content(ng-if="message.type === 0")
+                span [SERVER] &nbsp;
+                a.header.name {{message.username}}&nbsp;
                 .description.message(ng-if="message.type === 0")
                   | joined
+              .content(ng-if="message.type === 1")
+                span [SERVER] &nbsp;
+                a.header.name {{message.username}}&nbsp;
                 .description.message(ng-if="message.type === 1")
                   | left
-          .ui.action.input.fluid
-            input(type='text' placeholder='Type here...')
-            button.ui.button Send
+              .content(ng-if="message.type === 2")
+                a.header.name {{message.username}}&nbsp;
+                .description.message(ng-if="message.type === 2")
+                  | {{message.message}}
+          form.ui.action.input.fluid(ng-submit="newMessage()")
+            input(ng-model='message' placeholder='Type here...')
+            button.ui.button(type="submit") Send
